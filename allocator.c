@@ -27,42 +27,32 @@ void print_data(void)
     printf("\n");
 }
 
-int myalloc(int space){
+void * myalloc(int space){
+
   if (head == NULL){
     head = sbrk(1024);
     head->next = NULL;
     head->size = 1024 - PADDED_SIZE(sizeof(struct block));
     head->in_use = 0;
   } 
+
   struct block *n = head;
-
   while(n != NULL){
-
-    if (n->size > space){
+    if (n->size >= space && n->in_use == 0){
       n->in_use = 1;
-      printf("Here mothafucka: %d", n);
-      return &n;
-      
-    }
+      return PTR_OFFSET(n, PADDED_SIZE(sizeof(struct block)));
+    } 
+    n = n->next;
   }
-
   return NULL;
 }
+
 int main(){
-  void *heap = sbrk(1024);
-  
   void *p;
 
-  //print_data();
-  //p = myalloc(64);
-  //printf("head after alloc: %d", head->size);
-  //p = myalloc(64);
-  //print_data();
-
-
-    print_data();
-    p = myalloc(16);
-    print_data();
-    p = myalloc(16);
-    printf("%p\n", p);
+  print_data();
+  p = myalloc(16);
+  print_data();
+  p = myalloc(16);
+  printf("%p\n", p);
 }
