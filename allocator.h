@@ -19,6 +19,7 @@ struct block {
 };
 
 void print_data(void);
+void split_space(struct block *n, int space);
 void * myalloc(int s);
 
 #endif

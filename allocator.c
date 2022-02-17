@@ -28,14 +28,13 @@ void print_data(void)
 }
 
 void split_space(struct block *n, int space){
-  struct block *current = n;
-  printf("current size %d\n", current->size);
   struct block *new_n = PTR_OFFSET(n, PADDED_SIZE(space) + PADDED_SIZE(sizeof(struct block)));
-  printf("this %d\n", PTR_OFFSET(n, PADDED_SIZE(space) + PADDED_SIZE(sizeof(struct block))));
-  print_data();
   new_n ->in_use = 0;
-  new_n->size = current->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block))));
-  printf("new size: %d\n", current->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block)))));
+  new_n->size = n->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block))));
+  new_n->next = NULL;
+  printf("new size: %d\n", n->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block)))));
+  n->next = new_n;
+  n->size = PADDED_SIZE(space);
 
 
 }
