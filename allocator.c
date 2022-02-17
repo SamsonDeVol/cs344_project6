@@ -27,18 +27,34 @@ void print_data(void)
     printf("\n");
 }
 
-void * myalloc(int space){
+void split_space(struct block *n, int space){
+  struct block *current = n;
+  printf("current size %d\n", current->size);
+  struct block *new_n = PTR_OFFSET(n, PADDED_SIZE(space) + PADDED_SIZE(sizeof(struct block)));
+  printf("this %d\n", PTR_OFFSET(n, PADDED_SIZE(space) + PADDED_SIZE(sizeof(struct block))));
+  print_data();
+  new_n ->in_use = 0;
+  new_n->size = current->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block))));
+  printf("new size: %d\n", current->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block)))));
 
+
+}
+
+void * myalloc(int space){
   if (head == NULL){
     head = sbrk(1024);
     head->next = NULL;
     head->size = 1024 - PADDED_SIZE(sizeof(struct block));
     head->in_use = 0;
   } 
-
+  int required_space = PADDED_SIZE(space) + PADDED_SIZE(sizeof(struct block)) + 16;
   struct block *n = head;
   while(n != NULL){
     if (n->size >= space && n->in_use == 0){
+
+      if (n->size >= required_space){
+        split_space(n, space);
+      }
       n->in_use = 1;
       return PTR_OFFSET(n, PADDED_SIZE(sizeof(struct block)));
     } 
@@ -48,6 +64,12 @@ void * myalloc(int space){
 }
 
 int main(){
+  
+  void *p;
+  p = myalloc(16);
+  print_data();
+  
+ /*
   void *p;
 
   print_data();
@@ -55,4 +77,5 @@ int main(){
   print_data();
   p = myalloc(16);
   printf("%p\n", p);
+  */
 }
