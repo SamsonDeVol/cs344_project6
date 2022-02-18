@@ -32,11 +32,8 @@ void split_space(struct block *n, int space){
   new_n ->in_use = 0;
   new_n->size = n->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block))));
   new_n->next = NULL;
-  printf("new size: %d\n", n->size - (PADDED_SIZE(space) + (PADDED_SIZE(sizeof(struct block)))));
   n->next = new_n;
   n->size = PADDED_SIZE(space);
-
-
 }
 
 void * myalloc(int space){
@@ -56,18 +53,35 @@ void * myalloc(int space){
       }
       n->in_use = 1;
       return PTR_OFFSET(n, PADDED_SIZE(sizeof(struct block)));
-    } 
+    }
     n = n->next;
   }
   return NULL;
 }
 
+void myfree(void * pointer){
+  struct block *n = head;
+  while(n != NULL){
+    if ((int)pointer == (int)(n-(GET_PAD(sizeof(struct block)))+1)){
+      n->in_use = 0;
+    }
+    n=n->next;
+  }
+
+  
+  //printf("size: %d\n", *pointer);
+}
+
 int main(){
   
-  void *p;
-  p = myalloc(16);
-  print_data();
-  
+   void *p;
+
+  myalloc(10);     print_data();
+  p = myalloc(20); print_data();
+  myalloc(30);     print_data();
+  myfree(p);       print_data();
+  myalloc(40);     print_data();
+  myalloc(10);     print_data();
  /*
   void *p;
 
