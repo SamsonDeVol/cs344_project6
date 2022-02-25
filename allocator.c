@@ -60,33 +60,61 @@ void * myalloc(int space){
 }
 
 void myfree(void * pointer){
-  struct block *n = head;
-  while(n != NULL){
-    if ((int)pointer == (int)(n-(GET_PAD(sizeof(struct block)))+1)){
-      n->in_use = 0;
+  struct block *n = PTR_OFFSET(pointer, -PADDED_SIZE(sizeof(struct block)));
+  n->in_use = 0;
+  struct block *cur = head;
+  while (cur->next != NULL) {
+    if(cur->in_use == 0 && cur->next->in_use == 0) {
+      cur->size += cur->next->size + PADDED_SIZE(sizeof(struct block));
+      cur->next = cur->next->next;
     }
-    n=n->next;
+    else{
+      cur = cur->next;
+    }
   }
 }
 
 int main(){
-  
-   void *p;
   /*
+  void *p, *q;
+
+  p = myalloc(10); print_data();
+  q = myalloc(20); print_data();
+
+  myfree(q); print_data();
+  myfree(p); print_data();
+  */
+  /*
+  void *p, *q, *r, *s;
+
+  p = myalloc(10); print_data();
+  q = myalloc(20); print_data();
+  r = myalloc(30); print_data();
+  s = myalloc(40); print_data();
+
+  myfree(q); print_data();
+  myfree(p); print_data();
+  myfree(s); print_data();
+  myfree(r); print_data();
+  */
+  /*
+   void *p;
+  
   myalloc(10); print_data();
   myalloc(20); print_data();
   myalloc(30); print_data();
   myalloc(40); print_data();
   myalloc(50); print_data();
-
-  */
-  /*
+  
+  
+  
   myalloc(10);     print_data();
   p = myalloc(20); print_data();
   myalloc(30);     print_data();
   myfree(p);       print_data();
   myalloc(40);     print_data();
   myalloc(10);     print_data();
+ 
  
   void *p;
 
